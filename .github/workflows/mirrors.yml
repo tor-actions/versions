@@ -1,0 +1,38 @@
+name: Mirrors
+
+on:
+  schedule:
+    - cron: '1 5 * * *'
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  tor-build-scripts:
+    name: Mirror tor-build-scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror tor build script
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_MIRROR }}
+        run: |
+          echo "Skip, until upstream upgrade libevent"
+          #git clone --bare https://github.com/brave/tor_build_scripts.git .
+          #git remote add github "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${{ github.repository_owner }}/tor-build-scripts.git"
+          #git push --mirror github
+
+  tor-browser-build:
+    name: Mirror tor-browser-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror tor browser build
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_MIRROR }}
+        run: |
+          git clone --bare https://git.torproject.org/builders/tor-browser-build.git .
+          git remote add github "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${{ github.repository_owner }}/tor-browser-build.git"
+          git push --mirror github
+

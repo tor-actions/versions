@@ -1,0 +1,26 @@
+[
+  {
+    "version": "10.0.15",
+    "stable": true,
+    "files": [
+      {
+        "filename": "TorBrowser-10.0.15-osx64_en-US.dmg",
+        "arch": "x64",
+        "platform": "darwin",
+        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/TorBrowser-10.0.15-osx64_en-US.dmg"
+      },
+      {
+        "filename": "tor-browser-linux64-10.0.15_en-US.tar.xz",
+        "arch": "x64",
+        "platform": "linux",
+        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/tor-browser-linux64-10.0.15_en-US.tar.xz"
+      },
+      {
+        "filename": "torbrowser-install-win64-10.0.15_en-US.exe",
+        "arch": "x64",
+        "platform": "win32",
+        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/torbrowser-install-win64-10.0.15_en-US.exe"
+      }
+    ]
+  }
+]

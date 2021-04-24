@@ -1,0 +1,233 @@
+name: Builder
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  RBM_NUM_PROCS: 8
+
+jobs:
+  prepare:
+    name: Prepare jobs
+    runs-on: ubuntu-latest
+    outputs:
+      tor_version: ${{ steps.tor.outputs.version }}
+      darwin_amd64_dir: tor-darwin-amd64-${{ steps.tor.outputs.version }}
+      linux_dir: tor-linux-amd64-${{ steps.tor.outputs.version }}
+      windows_dir: tor-win32-${{ steps.tor.outputs.version }}
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+
+      - name: Prepare environments for Tor
+        run: |
+          source env.sh
+          echo "::set-output name=version::$TOR_VERSION"
+        id: tor
+
+  browser:
+    name: Build Tor Browser
+    runs-on: ubuntu-latest
+    needs: [ prepare ]
+    if: "contains(toJSON(github.event.commits.*.message), '[browser]')"
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          repository: '${{ github.repository_owner }}/tor-browser-build'
+          submodules: false
+          fetch-depth: 1
+
+      - name: Install build tools
+        run: |
+          sudo apt update -y
+          sudo apt install -y build-essential
+
+      - name: Install Tor Browser prerequisites
+        run: |
+          sudo apt install -y libyaml-libyaml-perl libtemplate-perl libdatetime-perl \
+                              libio-handle-util-perl libio-all-perl \
+                              libio-captureoutput-perl libjson-perl libpath-tiny-perl \
+                              libstring-shellquote-perl libsort-versions-perl \
+                              libdigest-sha-perl libdata-uuid-perl libdata-dump-perl \
+                              libfile-copy-recursive-perl libfile-slurp-perl git \
+                              uidmap
+
+      - name: Build Tor Browser latest version
+        run: |
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          make submodule-update
+          make release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: tor-browser
+          path: release/*
+          if-no-files-found: error
+
+  tor-linux:
+    name: Build Tor (Linux)
+    runs-on: ubuntu-latest
+    needs: [ prepare ]
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install build tools
+        run: |
+          sudo apt update -y
+          sudo apt install -y build-essential gnupg
+
+      - name: Generating GPG keys
+        run: |
+          mkdir -p gpg-keys
+          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
+          # Libevent
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+
+      - name: Build Tor binary
+        run: |
+          source env.sh
+          sh build_linux.sh
+          docker cp tor-brave:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.linux_dir }}'
+          rm -rf *.tar.* tor-$TOR_VERSION-linux-brave-*
+          tar -zcf '${{ needs.prepare.outputs.linux_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_dir }}'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: tor-linux
+          path: '${{ needs.prepare.outputs.linux_dir }}.tar.gz'
+          if-no-files-found: error
+
+  tor-darwin-amd64:
+    name: Build Tor for Darwin (amd64)
+    runs-on: macos-latest
+    needs: [ prepare ]
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+          submodules: true
+          fetch-depth: 0
+          ref: 'upgrade-libevent'
+
+      - name: Install build tools
+        run: |
+          brew update
+          brew install cmake autoconf automake libtool
+
+      - name: Generating GPG keys
+        run: |
+          mkdir -p gpg-keys
+          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
+          # Libevent
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+
+      - name: Build Tor binary (x86_64)
+        run: |
+          source env.sh
+          /bin/sh -c "set -eu pipefail && /bin/sh build_darwin_x86_64.sh 1"
+          rm *.tar.*
+          cp -r x86_64/tor-$TOR_VERSION/root '${{ needs.prepare.outputs.darwin_amd64_dir }}'
+          tar -zcf '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_amd64_dir }}'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: tor-darwin
+          path: '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz'
+          if-no-files-found: error
+
+  tor-windows:
+    name: Build Tor (Windows)
+    runs-on: ubuntu-latest
+    needs: [ prepare ]
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install build tools
+        run: |
+          sudo apt update -y
+          sudo apt install -y build-essential gnupg
+
+      - name: Generating GPG keys
+        run: |
+          mkdir -p gpg-keys
+          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
+          # Libevent
+          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+
+      - name: Build Tor binary
+        run: |
+          source env.sh
+          sh build_mingw.sh
+          docker cp tor-brave-mingw:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.windows_dir }}'
+          rm -rf *.tar.* tor-$TOR_VERSION-win32-brave-*
+          tar -zcf '${{ needs.prepare.outputs.windows_dir }}.tar.gz' '${{ needs.prepare.outputs.windows_dir }}'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: tor-windows
+          path: '${{ needs.prepare.outputs.windows_dir }}.tar.gz'
+          if-no-files-found: error
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [ prepare, tor-linux, tor-darwin-amd64, tor-windows ]
+    steps:
+    - name: Check out code base
+      uses: actions/checkout@v2
+
+    - name: Download math result from build job
+      uses: actions/download-artifact@v2
+      with:
+        path: tor-binaries
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        name: 'Tor version ${{ needs.prepare.outputs.tor_version }}'
+        tag_name: '${{ needs.prepare.outputs.tor_version }}'
+        prerelease: false
+        draft: false
+        files: |
+          tor-binaries/**/*.tar.gz
