@@ -1,25 +1,25 @@
 [
   {
-    "version": "10.0.15",
+    "version": "0.4.5-rc7",
     "stable": true,
     "files": [
       {
-        "filename": "TorBrowser-10.0.15-osx64_en-US.dmg",
+        "filename": "tor-darwin-amd64-0.4.5.7.tar.gz",
         "arch": "x64",
         "platform": "darwin",
-        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/TorBrowser-10.0.15-osx64_en-US.dmg"
+        "download_url": "https://github.com/tor-actions/versions/releases/download/0.4.5.7/tor-darwin-amd64-0.4.5.7.tar.gz"
       },
       {
-        "filename": "tor-browser-linux64-10.0.15_en-US.tar.xz",
+        "filename": "tor-linux-amd64-0.4.5.7.tar.gz",
         "arch": "x64",
         "platform": "linux",
-        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/tor-browser-linux64-10.0.15_en-US.tar.xz"
+        "download_url": "https://github.com/tor-actions/versions/releases/download/0.4.5.7/tor-linux-amd64-0.4.5.7.tar.gz"
       },
       {
-        "filename": "torbrowser-install-win64-10.0.15_en-US.exe",
+        "filename": "tor-win32-0.4.5.7.tar.gz",
         "arch": "x64",
         "platform": "win32",
-        "download_url": "https://dist.torproject.org/torbrowser/10.0.15/torbrowser-install-win64-10.0.15_en-US.exe"
+        "download_url": "https://github.com/tor-actions/versions/releases/download/0.4.5.7/tor-win32-0.4.5.7.tar.gz"
       }
     ]
   }
