@@ -7,7 +7,7 @@ Build Tor Browser and Tor using GitHub Actions.
 ### Linux
 
 ```
-./tor-0.4.5.7-linux
+./tor-linux-0.4.5.7/
 |-- bin
 |   |-- tor
 |   |-- tor-gencert
@@ -25,12 +25,27 @@ Build Tor Browser and Tor using GitHub Actions.
 
 ### macOS
 
-*WIP*
+```
+./tor-darwin-amd64-0.4.5.7/
+|-- bin
+|   |-- tor
+|   |-- tor-gencert
+|   |-- tor-print-ed-signing-cert
+|   |-- tor-resolve
+|   `-- torify
+|-- etc
+|   `-- tor
+|       `-- torrc.sample
+`-- share
+    `-- tor
+        |-- geoip
+        `-- geoip6
+```
 
 ### Windows
 
 ```
-./tor-0.4.5.7-win32/
+./tor-win32-0.4.5.7/
 |-- bin
 |   |-- tor-gencert.exe
 |   |-- tor-print-ed-signing-cert.exe
