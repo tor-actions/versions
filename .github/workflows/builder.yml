@@ -139,7 +139,7 @@ jobs:
       - name: Install build tools
         run: |
           brew update
-          brew install cmake autoconf automake libtool
+          brew reinstall cmake autoconf automake libtool
 
       - name: Generating GPG keys
         run: |
