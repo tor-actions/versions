@@ -100,11 +100,11 @@ jobs:
         run: |
           mkdir -p gpg-keys
           rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
           # Libevent
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
@@ -145,11 +145,11 @@ jobs:
         run: |
           mkdir -p gpg-keys
           rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
           # Libevent
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
@@ -189,11 +189,11 @@ jobs:
         run: |
           mkdir -p gpg-keys
           rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --output gpg-keys/tor.gpg --export 2133BC600AB133E1D826D173FE43009C4607B1FB
           gpg --fingerprint 2133BC600AB133E1D826D173FE43009C4607B1FB
           # Libevent
-          gpg --no-tty --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
           gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
