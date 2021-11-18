@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Release binary
+
+set -eu pipefail
+
+version=`git describe --tags --abbrev=0`
+manifest=`cat versions-manifest.tmpl | sed -e "s#0.0.0.0#${version}#g" | sed -e "s#0.0.0-rc0#$(echo ${version} | sed 's/\(.*\)\./\1-rc/')#g"`
+manifest=`jq --argjson manifest "$(echo ${manifest})" '[$manifest]? + .' versions-manifest.json`
+latest=`jq '.[0].version' versions-manifest.json`
+newest=`echo "${manifest}" | jq '.[0].version'`
+
+if [ "${newest}" != "${latest}" ]; then
+    echo "${manifest}" > versions-manifest.json
+fi
+
