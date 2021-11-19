@@ -14,7 +14,7 @@ on:
 
 env:
   DEBIAN_FRONTEND: noninteractive
-  RBM_NUM_PROCS: 8
+  #RBM_NUM_PROCS: 8
 
 jobs:
   prepare:
@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
-          ref: 'upgrade-libevent'
+          ref: 'adjustment'
 
       - name: Prepare environments for Tor
         run: |
@@ -89,12 +89,13 @@ jobs:
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
-          fetch-depth: 1
+          fetch-depth: 0
+          ref: 'adjustment'
 
       - name: Install build tools
         run: |
           sudo apt update -y
-          sudo apt install -y build-essential gnupg
+          sudo apt install -y build-essential gnupg file
 
       - name: Generating GPG keys
         run: |
@@ -134,7 +135,7 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
-          ref: 'upgrade-libevent'
+          ref: 'adjustment'
 
       - name: Install build tools
         run: |
@@ -178,12 +179,13 @@ jobs:
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
-          fetch-depth: 1
+          fetch-depth: 0
+          ref: 'adjustment'
 
       - name: Install build tools
         run: |
           sudo apt update -y
-          sudo apt install -y build-essential gnupg
+          sudo apt install -y build-essential gnupg file
 
       - name: Generating GPG keys
         run: |
