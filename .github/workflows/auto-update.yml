@@ -1,0 +1,69 @@
+name: Auto Update
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    outputs:
+      latest_version: ${{ steps.latest_version.outputs.latest_version }}
+      latest_version_formatted: ${{ steps.latest_version.outputs.latest_version_formatted }}
+      manifest_version: ${{ steps.manifest_version.outputs.manifest_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Retrieve latest version
+        id: latest_version
+        run: |
+          latest_version="$(wget -q https://gitweb.torproject.org/tor.git/plain/ChangeLog -O - | grep -E -m10 '^Changes in version\s[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\s' | sed 's/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*$/\1/' | sort -rV | head -n 1)"
+          latest_version_formatted=$(echo ${latest_version} | sed 's/\(.*\)\./\1-rc/')
+          echo "::set-output name=latest_version::${latest_version}"
+          echo "::set-output name=latest_version_formatted::${latest_version_formatted}"
+
+      - name: Retrieve version from manifest
+        id: manifest_version
+        run: |
+          echo "::set-output name=manifest_version::$(jq '.[0].version' versions-manifest.json)"
+
+      - name: Output latest versions
+        run: |
+          echo "The latest version of Tor on the website is:  ${{ steps.latest_version.outputs.latest_version_formatted }} (${{ steps.latest_version.outputs.latest_version }})"
+          echo "The latest version of Tor in the manifest is: ${{ steps.manifest_version.outputs.manifest_version }}"
+
+  update:
+    name: Update
+    runs-on: ubuntu-latest
+    needs: ['check']
+    if: ${{ needs.check.outputs.latest_version_formatted != needs.check.outputs.manifest_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate new version manifest
+        id: new_version_manifest
+        run: |
+          new_version_manifest="$(cat versions-manifest.tmpl | sed -e 's#0.0.0.0#${{ needs.check.outputs.latest_version }}#g' | sed -e 's#0.0.0-rc0#${{ needs.check.outputs.latest_version_formatted }}#g' | jq -c)"
+          echo "::set-output name=new_version_manifest::${new_version_manifest}"
+
+      - name: Update manifest
+        run: |
+          cp versions-manifest.json versions-manifest.json.bak
+          jq --argjson manifest '${{ steps.new_version_manifest.outputs.new_version_manifest }}' '. |= [$manifest] + .' versions-manifest.json.bak | tee versions-manifest.json
+          rm versions-manifest.json.bak
+
+      - name: Create PR for latest version
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "feat: add version v${{ needs.check.outputs.latest_version }}"
+          committer: GitHub Action <noreply@github.com>
+          title: "feat: add version v${{ needs.check.outputs.latest_version }} (${{ needs.check.outputs.latest_version_formatted }})"
+          body: |
+            This updates from ${{ needs.check.outputs.manifest_version }} to ${{ needs.check.outputs.latest_version_formatted }}.
+            - [Changelog](https://gitweb.torproject.org/tor.git/plain/ChangeLog?h=tor-${{ needs.check.outputs.latest_version }})
+            - [Tag](https://gitweb.torproject.org/tor.git/tag/?h=tor-${{ needs.check.outputs.latest_version }})
+          branch: feature/update-${{ needs.check.outputs.latest_version_formatted }}
