@@ -90,7 +90,11 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
-          ref: 'adjustment'
+
+      - name: Apply patch for GitHub Actions
+        run: |
+          git cherry-pick --no-commit origin/patch
+          git apply patch/github-actions/*.patch
 
       - name: Install build tools
         run: |
@@ -111,6 +115,8 @@ jobs:
 
       - name: Build Tor binary
         run: |
+          # Don't cleanup for docker images after build
+          sed -i 's#trap cleanup EXIT##' build_linux.sh
           source env.sh
           sh build_linux.sh
           docker cp tor-brave:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.linux_dir }}'
@@ -135,7 +141,11 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
-          ref: 'adjustment'
+
+      - name: Apply patch for GitHub Actions
+        run: |
+          git cherry-pick --no-commit origin/patch
+          git apply patch/github-actions/*.patch
 
       - name: Install build tools
         run: |
@@ -180,7 +190,11 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
-          ref: 'adjustment'
+
+      - name: Apply patch for GitHub Actions
+        run: |
+          git cherry-pick --no-commit origin/patch
+          git apply patch/github-actions/*.patch
 
       - name: Install build tools
         run: |
@@ -201,6 +215,8 @@ jobs:
 
       - name: Build Tor binary
         run: |
+          # Don't cleanup for docker images after build
+          sed -i 's#trap cleanup EXIT##' build_mingw.sh
           source env.sh
           sh build_mingw.sh
           docker cp tor-brave-mingw:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.windows_dir }}'
