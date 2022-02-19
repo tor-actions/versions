@@ -59,11 +59,11 @@ jobs:
       - name: Create PR for latest version
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: "feat: add version v${{ needs.check.outputs.latest_version }}"
+          commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
           committer: GitHub Action <noreply@github.com>
-          title: "feat: add version v${{ needs.check.outputs.latest_version }} (${{ needs.check.outputs.latest_version_formatted }})"
+          title: "release: add version v${{ needs.check.outputs.latest_version }} (${{ needs.check.outputs.latest_version_formatted }})"
           body: |
             This updates from ${{ needs.check.outputs.manifest_version }} to ${{ needs.check.outputs.latest_version_formatted }}.
             - [Changelog](https://gitweb.torproject.org/tor.git/plain/ChangeLog?h=tor-${{ needs.check.outputs.latest_version }})
             - [Tag](https://gitweb.torproject.org/tor.git/tag/?h=tor-${{ needs.check.outputs.latest_version }})
-          branch: feature/update-${{ needs.check.outputs.latest_version_formatted }}
+          branch: release/newver-${{ needs.check.outputs.latest_version_formatted }}
