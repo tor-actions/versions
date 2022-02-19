@@ -1,6 +1,10 @@
-# pipeline
+# Tor for Actions
 
-Build Tor Browser and Tor using GitHub Actions.
+This repository contains the code and scripts that we use to build Tor binaries used in [virtual-environments](https://github.com/actions/virtual-environments) and accessible through the [setup-tor](https://github.com/tor-actions/setup-tor) Action.
+
+File [versions-manifest.json](./versions-manifest.json) contains the list of available and released versions.
+
+> Caution: this is prepared for and only permitted for use by actions `virtual-environments` and `setup-tor` action.
 
 ## Binaries path structure
 
