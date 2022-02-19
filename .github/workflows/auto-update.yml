@@ -28,7 +28,7 @@ jobs:
       - name: Retrieve version from manifest
         id: manifest_version
         run: |
-          echo "::set-output name=manifest_version::$(jq '.[0].version' versions-manifest.json)"
+          echo "::set-output name=manifest_version::$(jq -r '.[0].version' versions-manifest.json)"
 
       - name: Output latest versions
         run: |
