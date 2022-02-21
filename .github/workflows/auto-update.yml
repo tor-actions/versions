@@ -35,10 +35,52 @@ jobs:
           echo "The latest version of Tor on the website is:  ${{ steps.latest_version.outputs.latest_version_formatted }} (${{ steps.latest_version.outputs.latest_version }})"
           echo "The latest version of Tor in the manifest is: ${{ steps.manifest_version.outputs.manifest_version }}"
 
+  update-build-scripts:
+    name: Update Build Scripts
+    runs-on: ubuntu-latest
+    needs: ['check']
+    outputs:
+      pull_request_url: ${{ steps.create_pull_request.outputs.pull-request-url }}
+    if: ${{ needs.check.outputs.latest_version_formatted != needs.check.outputs.manifest_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: tor-actions/tor-build-scripts
+          ref: master
+
+      - name: Get SHA256 checksum
+        id: checksum
+        run: |
+          checksum=$(curl https://dist.torproject.org/tor-${{ needs.check.outputs.latest_version }}.tar.gz.sha256sum)
+          checksum=$(echo "${checksum}" | grep -oE "[a-f0-9]{64}")
+          echo "::set-output name=checksum::${checksum}"
+
+      - name: Update `env.sh` file
+        run: |
+          env_file_contents="$(cat env.sh)"
+          env_file_contents="$(echo "${env_file_contents}" | sed -e 's#export TOR_VERSION="[0-9]*\.[0-9]*\.[0-9]*\.[0-9]"#export TOR_VERSION=\"${{ needs.check.outputs.latest_version }}\"#g')"
+          env_file_contents="$(echo "${env_file_contents}" | sed -E 's#export TOR_HASH=[a-f0-9]{64}#export TOR_HASH={{ steps.checksum.outputs.checksum }}#g')"
+          echo "${env_file_contents}" > env.sh
+
+      - name: Create PR for latest version
+        id: create_pull_request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.TOC_ACTION_ACCESS_REPO }}
+          commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
+          committer: GitHub Action <noreply@github.com>
+          title: "release: add version v${{ needs.check.outputs.latest_version }}"
+          body: |
+            This updates from ${{ needs.check.outputs.manifest_version }} to ${{ needs.check.outputs.latest_version }}.
+            - [Changelog](https://gitweb.torproject.org/tor.git/plain/ChangeLog?h=tor-${{ needs.check.outputs.latest_version }})
+            - [Tag](https://gitweb.torproject.org/tor.git/tag/?h=tor-${{ needs.check.outputs.latest_version }})
+          branch: release/newver-${{ needs.check.outputs.latest_version }}
+
   update:
     name: Update
     runs-on: ubuntu-latest
-    needs: ['check']
+    needs: ['check', 'update-build-scripts']
     if: ${{ needs.check.outputs.latest_version_formatted != needs.check.outputs.manifest_version }}
     steps:
       - name: Checkout
@@ -57,12 +99,14 @@ jobs:
           rm versions-manifest.json.bak
 
       - name: Create PR for latest version
+        id: create_pull_request
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
           committer: GitHub Action <noreply@github.com>
           title: "release: add version v${{ needs.check.outputs.latest_version }} (${{ needs.check.outputs.latest_version_formatted }})"
           body: |
+            This should be merged after: ${{ needs.update-build-scripts.outputs.pull_request_url }}
             This updates from ${{ needs.check.outputs.manifest_version }} to ${{ needs.check.outputs.latest_version_formatted }}.
             - [Changelog](https://gitweb.torproject.org/tor.git/plain/ChangeLog?h=tor-${{ needs.check.outputs.latest_version }})
             - [Tag](https://gitweb.torproject.org/tor.git/tag/?h=tor-${{ needs.check.outputs.latest_version }})
