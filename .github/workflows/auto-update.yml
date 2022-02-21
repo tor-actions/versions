@@ -48,7 +48,6 @@ jobs:
         with:
           repository: tor-actions/tor-build-scripts
           ref: master
-          token: ${{ secrets.TOR_BUILD_SCRIPTS_TOKEN }}
 
       - name: Get SHA256 checksum
         id: checksum
@@ -68,7 +67,7 @@ jobs:
         id: create_pull_request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.TOR_BUILD_SCRIPTS_TOKEN }}
+          token: ${{ secrets.TOC_ACTION_ACCESS_REPO }}
           commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
           committer: GitHub Action <noreply@github.com>
           title: "release: add version v${{ needs.check.outputs.latest_version }}"
