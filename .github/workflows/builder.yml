@@ -89,6 +89,7 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
+          ref: patch
 
       - name: Apply patch for GitHub Actions
         run: |
@@ -140,6 +141,7 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
+          ref: patch
 
       - name: Apply patch for GitHub Actions
         run: |
@@ -189,6 +191,7 @@ jobs:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
           fetch-depth: 0
+          ref: patch
 
       - name: Apply patch for GitHub Actions
         run: |
