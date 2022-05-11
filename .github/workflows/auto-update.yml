@@ -60,7 +60,7 @@ jobs:
         run: |
           env_file_contents="$(cat env.sh)"
           env_file_contents="$(echo "${env_file_contents}" | sed -e 's#export TOR_VERSION="[0-9]*\.[0-9]*\.[0-9]*\.[0-9]"#export TOR_VERSION=\"${{ needs.check.outputs.latest_version }}\"#g')"
-          env_file_contents="$(echo "${env_file_contents}" | sed -E 's#export TOR_HASH=[a-f0-9]{64}#export TOR_HASH={{ steps.checksum.outputs.checksum }}#g')"
+          env_file_contents="$(echo "${env_file_contents}" | sed -E 's#export TOR_HASH=[a-f0-9]{64}#export TOR_HASH=${{ steps.checksum.outputs.checksum }}#g')"
           echo "${env_file_contents}" > env.sh
 
       - name: Create PR for latest version
