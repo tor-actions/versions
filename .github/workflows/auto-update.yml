@@ -15,7 +15,7 @@ jobs:
       manifest_version: ${{ steps.manifest_version.outputs.manifest_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Retrieve latest version
         id: latest_version
@@ -44,7 +44,7 @@ jobs:
     if: ${{ needs.check.outputs.latest_version_formatted != needs.check.outputs.manifest_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tor-actions/tor-build-scripts
           ref: master
@@ -65,7 +65,7 @@ jobs:
 
       - name: Create PR for latest version
         id: create_pull_request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.TOC_ACTION_ACCESS_REPO }}
           commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
@@ -84,7 +84,7 @@ jobs:
     if: ${{ needs.check.outputs.latest_version_formatted != needs.check.outputs.manifest_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Generate new version manifest
         id: new_version_manifest
@@ -100,7 +100,7 @@ jobs:
 
       - name: Create PR for latest version
         id: create_pull_request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           commit-message: "release: add version v${{ needs.check.outputs.latest_version }}"
           committer: GitHub Action <noreply@github.com>

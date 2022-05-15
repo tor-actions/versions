@@ -14,7 +14,7 @@ jobs:
       latest_version: ${{ steps.latest_version.outputs.latest_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Retrieve latest version
         id: latest_version
@@ -32,12 +32,12 @@ jobs:
     needs: ['check']
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: '0'
 
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.36.0
+        uses: anothrNick/github-tag-action@1.39.0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TAGGING }} # To trigger the builder workflow, a personal access token is required.
           WITH_V: false
