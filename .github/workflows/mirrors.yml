@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror tor build script
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_MIRROR }}
         run: |
@@ -27,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror tor browser build
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_MIRROR }}
         run: |
