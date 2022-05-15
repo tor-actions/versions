@@ -27,7 +27,7 @@ jobs:
       windows_dir: tor-win32-${{ steps.tor.outputs.version }}
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
 
@@ -44,7 +44,7 @@ jobs:
     if: "contains(toJSON(github.event.commits.*.message), '[browser]')"
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: '${{ github.repository_owner }}/tor-browser-build'
           submodules: false
@@ -84,7 +84,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -131,7 +131,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -178,7 +178,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -226,7 +226,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
     - name: Check out code base
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Download math result from build job
       uses: actions/download-artifact@v2
