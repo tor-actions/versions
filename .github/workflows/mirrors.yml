@@ -32,6 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_MIRROR }}
         run: |
+          git config --global init.defaultBranch main
           git clone --bare https://git.torproject.org/builders/tor-browser-build.git .
           git remote add github "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${{ github.repository_owner }}/tor-browser-build.git"
           git push --mirror github
