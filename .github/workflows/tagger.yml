@@ -20,7 +20,7 @@ jobs:
         id: latest_version
         run: |
           latest_version=$(echo ${{ github.head_ref }} | sed 's#release/newver-##' | sed 's#-rc#.#')
-          echo "::set-output name=latest_version::${latest_version}"
+          echo "latest_version=${latest_version}" >> $GITHUB_OUTPUT
 
       - name: Output latest versions
         run: |

@@ -22,13 +22,14 @@ jobs:
         run: |
           latest_version="$(wget -q https://gitweb.torproject.org/tor.git/plain/ChangeLog -O - | grep -E -m10 '^Changes in version\s[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\s' | sed 's/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*$/\1/' | sort -rV | head -n 1)"
           latest_version_formatted=$(echo ${latest_version} | sed 's/\(.*\)\./\1-rc/')
-          echo "::set-output name=latest_version::${latest_version}"
-          echo "::set-output name=latest_version_formatted::${latest_version_formatted}"
+          echo "latest_version=${latest_version}" >> $GITHUB_OUTPUT
+          echo "latest_version_formatted=${latest_version_formatted}" >> $GITHUB_OUTPUT
 
       - name: Retrieve version from manifest
         id: manifest_version
         run: |
-          echo "::set-output name=manifest_version::$(jq -r '.[0].version' versions-manifest.json)"
+          manifest_version="$(jq -r '.[0].version' versions-manifest.json)"
+          echo "manifest_version=${manifest_version}" >> $GITHUB_OUTPUT
 
       - name: Output latest versions
         run: |
@@ -54,7 +55,7 @@ jobs:
         run: |
           checksum=$(curl https://dist.torproject.org/tor-${{ needs.check.outputs.latest_version }}.tar.gz.sha256sum)
           checksum=$(echo "${checksum}" | grep -oE "[a-f0-9]{64}")
-          echo "::set-output name=checksum::${checksum}"
+          echo "checksum=${checksum}" >> $GITHUB_OUTPUT
 
       - name: Update `env.sh` file
         run: |
