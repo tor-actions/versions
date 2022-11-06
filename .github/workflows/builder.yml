@@ -34,7 +34,7 @@ jobs:
       - name: Prepare environments for Tor
         run: |
           source env.sh
-          echo "::set-output name=version::$TOR_VERSION"
+          echo "version=${TOR_VERSION}" >> $GITHUB_OUTPUT
         id: tor
 
   browser:
