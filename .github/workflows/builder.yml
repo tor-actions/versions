@@ -95,18 +95,18 @@ jobs:
           sudo apt update -y
           sudo apt install -y build-essential apt-utils gnupg dirmngr file
 
-      - name: Generating GPG keys
-        run: |
-          mkdir -p gpg-keys
-          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --list-keys # Generate `$HOME/.gnupg` directory
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
-          # Libevent
-          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #- name: Generating GPG keys
+      #  run: |
+      #    mkdir -p gpg-keys
+      #    rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+      #    gpg --list-keys # Generate `$HOME/.gnupg` directory
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+      #    # Libevent
+      #    gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
       - name: Build Tor binary
         run: |
@@ -142,18 +142,18 @@ jobs:
           brew update
           brew reinstall cmake autoconf automake libtool gnu-sed
 
-      - name: Generating GPG keys
-        run: |
-          mkdir -p gpg-keys
-          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --list-keys # Generate `$HOME/.gnupg` directory
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
-          # Libevent
-          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #- name: Generating GPG keys
+      #  run: |
+      #    mkdir -p gpg-keys
+      #    rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+      #    gpg --list-keys # Generate `$HOME/.gnupg` directory
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+      #    # Libevent
+      #    gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
       - name: Build Tor binary (x86_64)
         run: |
@@ -189,18 +189,18 @@ jobs:
           sudo apt update -y
           sudo apt install -y build-essential gnupg dirmngr file
 
-      - name: Generating GPG keys
-        run: |
-          mkdir -p gpg-keys
-          rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
-          gpg --list-keys # Generate `$HOME/.gnupg` directory
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
-          gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
-          # Libevent
-          gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
-          gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #- name: Generating GPG keys
+      #  run: |
+      #    mkdir -p gpg-keys
+      #    rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+      #    gpg --list-keys # Generate `$HOME/.gnupg` directory
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+      #    # Libevent
+      #    gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
 
       - name: Build Tor binary
         run: |
