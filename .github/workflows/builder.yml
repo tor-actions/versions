@@ -23,7 +23,9 @@ jobs:
     outputs:
       tor_version: ${{ steps.tor.outputs.version }}
       darwin_amd64_dir: tor-darwin-amd64-${{ steps.tor.outputs.version }}
-      linux_dir: tor-linux-amd64-${{ steps.tor.outputs.version }}
+      darwin_arm64_dir: tor-darwin-arm64-${{ steps.tor.outputs.version }}
+      linux_amd64_dir: tor-linux-amd64-${{ steps.tor.outputs.version }}
+      linux_arm64_dir: tor-linux-arm64-${{ steps.tor.outputs.version }}
       windows_dir: tor-win32-${{ steps.tor.outputs.version }}
     steps:
       - name: Check out code base
@@ -78,8 +80,8 @@ jobs:
           path: release/*
           if-no-files-found: error
 
-  tor-linux:
-    name: Build Tor (Linux)
+  tor-linux-amd64:
+    name: Build Tor for Linux (amd64)
     runs-on: ubuntu-latest
     needs: [ prepare ]
     steps:
@@ -114,20 +116,67 @@ jobs:
           sed -i 's#trap cleanup EXIT##' build_linux.sh
           source env.sh
           sh build_linux.sh
-          docker cp tor-brave:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.linux_dir }}'
+          docker cp tor-brave:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.linux_amd64_dir }}'
           rm -rf *.tar.* tor-$TOR_VERSION-linux-brave-*
-          tar -zcf '${{ needs.prepare.outputs.linux_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_dir }}'
+          tar -zcf '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_amd64_dir }}'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: tor-linux
-          path: '${{ needs.prepare.outputs.linux_dir }}.tar.gz'
+          name: tor-linux-amd64
+          path: '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz'
+          if-no-files-found: error
+
+  tor-linux-arm64:
+    name: Build Tor for Linux (arm64)
+    runs-on: ubuntu-latest
+    needs: [ prepare ]
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+          submodules: true
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: |
+          sudo apt update -y
+          sudo apt install -y build-essential apt-utils gnupg dirmngr file
+
+      #- name: Generating GPG keys
+      #  run: |
+      #    mkdir -p gpg-keys
+      #    rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+      #    gpg --list-keys # Generate `$HOME/.gnupg` directory
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+      #    # Libevent
+      #    gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+
+      - name: Build Tor binary
+        run: |
+          # Don't cleanup for docker images after build
+          sed -i 's#trap cleanup EXIT##' build_linux.sh
+          source env.sh
+          sh build_linux_arm64.sh
+          docker cp tor-brave-arm64:/tor-$TOR_VERSION/install '${{ needs.prepare.outputs.linux_arm64_dir }}'
+          rm -rf *.tar.* tor-$TOR_VERSION-linux-brave-*
+          tar -zcf '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_arm64_dir }}'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tor-linux-arm64
+          path: '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz'
           if-no-files-found: error
 
   tor-darwin-amd64:
     name: Build Tor for Darwin (amd64)
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: [ prepare ]
     steps:
       - name: Check out code base
@@ -168,8 +217,55 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: tor-darwin
+          name: tor-darwin-amd64
           path: '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz'
+          if-no-files-found: error
+
+  tor-darwin-arm64:
+    name: Build Tor for Darwin (arm64)
+    runs-on: macos-latest
+    needs: [ prepare ]
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository_owner }}/tor-build-scripts'
+          submodules: true
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: |
+          brew update
+          brew reinstall cmake autoconf automake libtool gnu-sed
+
+      #- name: Generating GPG keys
+      #  run: |
+      #    mkdir -p gpg-keys
+      #    rm -f gpg-keys/tor.gpg gpg-keys/libevent.gpg
+      #    gpg --list-keys # Generate `$HOME/.gnupg` directory
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+      #    gpg --no-tty --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+      #    # Libevent
+      #    gpg --no-tty --keyserver keyserver.ubuntu.com --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+      #    gpg --fingerprint 9E3AC83A27974B84D1B3401DB86086848EF8686D
+
+      - name: Build Tor binary (arm64)
+        run: |
+          source env.sh
+          gsed -i 's/sh\ build_darwin_x86_64/#sh\ build_darwin_x86_64/' build_darwin.sh  # Don't needs build for amd64 arch
+          gsed -i 's/lipo/#lipo/' build_darwin.sh                                      # Don't run lipo
+          /bin/sh -c "set -eu pipefail && /bin/sh build_darwin.sh"
+          rm *.tar.*
+          cp -r arm64/tor-$TOR_VERSION/root '${{ needs.prepare.outputs.darwin_arm64_dir }}'
+          tar -zcf '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_arm64_dir }}'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tor-darwin-arm64
+          path: '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz'
           if-no-files-found: error
 
   tor-windows:
@@ -222,7 +318,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [ prepare, tor-linux, tor-darwin-amd64, tor-windows ]
+    needs: [ prepare, tor-linux-amd64, tor-linux-arm64, tor-darwin-amd64, tor-darwin-arm64, tor-windows ]
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
     - name: Check out code base
