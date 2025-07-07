@@ -74,7 +74,7 @@ jobs:
           make release
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-browser
           path: release/*
@@ -121,7 +121,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_amd64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-linux-amd64
           path: '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz'
@@ -168,7 +168,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_arm64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-linux-arm64
           path: '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz'
@@ -215,7 +215,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_amd64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-darwin-amd64
           path: '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz'
@@ -262,7 +262,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_arm64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-darwin-arm64
           path: '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz'
@@ -309,7 +309,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.windows_dir }}.tar.gz' '${{ needs.prepare.outputs.windows_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tor-windows
           path: '${{ needs.prepare.outputs.windows_dir }}.tar.gz'
