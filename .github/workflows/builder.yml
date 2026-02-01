@@ -176,7 +176,7 @@ jobs:
 
   tor-darwin-amd64:
     name: Build Tor for Darwin (amd64)
-    runs-on: macos-13
+    runs-on: macOS-15
     needs: [ prepare ]
     steps:
       - name: Check out code base
