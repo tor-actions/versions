@@ -74,7 +74,7 @@ jobs:
           make release
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-browser
           path: release/*
@@ -86,7 +86,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -121,7 +121,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_amd64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-linux-amd64
           path: '${{ needs.prepare.outputs.linux_amd64_dir }}.tar.gz'
@@ -133,7 +133,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -168,7 +168,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.linux_arm64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-linux-arm64
           path: '${{ needs.prepare.outputs.linux_arm64_dir }}.tar.gz'
@@ -180,7 +180,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -215,7 +215,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_amd64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-darwin-amd64
           path: '${{ needs.prepare.outputs.darwin_amd64_dir }}.tar.gz'
@@ -227,7 +227,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -262,7 +262,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz' '${{ needs.prepare.outputs.darwin_arm64_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-darwin-arm64
           path: '${{ needs.prepare.outputs.darwin_arm64_dir }}.tar.gz'
@@ -274,7 +274,7 @@ jobs:
     needs: [ prepare ]
     steps:
       - name: Check out code base
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: '${{ github.repository_owner }}/tor-build-scripts'
           submodules: true
@@ -309,7 +309,7 @@ jobs:
           tar -zcf '${{ needs.prepare.outputs.windows_dir }}.tar.gz' '${{ needs.prepare.outputs.windows_dir }}'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tor-windows
           path: '${{ needs.prepare.outputs.windows_dir }}.tar.gz'
@@ -322,15 +322,15 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
     - name: Check out code base
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Download math result from build job
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v7
       with:
         path: tor-binaries
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
